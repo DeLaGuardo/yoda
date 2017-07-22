@@ -136,6 +136,16 @@ case "$cmd" in
     docker-compose -f $MAIN_COMPOSE_FILE -f $COMPOSE_FILE config
     ;;
 
+  exec)
+    check_yodarc
+    docker-compose -f $MAIN_COMPOSE_FILE -f $COMPOSE_FILE exec $@
+    ;;
+
+  restart)
+    check_yodarc
+    bash "$YODA_PATH/src/restart.sh" "$@"
+    ;;
+
   build)
     check_yodarc
     custom_run build "$@"
