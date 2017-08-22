@@ -63,6 +63,8 @@ for line in "${lines[@]}"; do
     build_args=$(eval echo $build_args)
     context="."
   fi
+  return 1
+}
 
   image_ids[$name]=$image_id
 
