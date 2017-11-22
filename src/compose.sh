@@ -65,7 +65,7 @@ get_container_name() {
 }
 
 adapt_link() {
-  link_with_alias=$(echo "$1" | sed -r 's/^[ -]+(.*)$/\1/' | tr -d $'\n')
+  link_with_alias=$(echo "$1" | sed -E 's/^[ -]+(.*)$/\1/' | tr -d $'\n')
   link=${link_with_alias%:*}
   alias=${link_with_alias#*:}
   for n in $(seq 0 ${SCALE_MAP[$link]:-0}); do
@@ -93,11 +93,12 @@ for p in ${!SCALE_MAP[*]}; do
     env_container_file="$DOCKER_ROOT/containers/$p/container.$ENV.yml"
     container_file="$DOCKER_ROOT/containers/$p/container.yml"
 
+    echo "  $container_name:"
+
     if [[ ! -f "$env_container_file" && $second_run ]]; then
       continue
     fi
 
-    echo "  $container_name:"
     if [[ ! $second_run ]]; then
       echo "    container_name: ${COMPOSE_PROJECT_NAME}.$container_name"
       echo "    hostname: ${HOSTNAME}.${COMPOSE_PROJECT_NAME}.$container_name"
