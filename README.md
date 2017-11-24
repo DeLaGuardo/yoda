@@ -4,22 +4,22 @@ Simple tool to dockerize and manage deployment of your project
 ![Alt text](/img/yoda.jpg?raw=true "Help you deploy I will")  
 
 ## What is it?
-Yoda helps you to dockerize existing application and automate deployment process.
+Yoda helps you to dockerize existing application and automate the deployment process.
 
 1. Only BASH. No dependency shit!
 2. Requirements: git, docker, docker-compose
-3. Its simple like simplicity itself
+3. It's simple like simplicity itself
 4. Runs on MACOS and Linux systems
 
 ## Installation
-First you need to install Yoda on your laptop. Its supereasy:
+First you need to install Yoda on your laptop. It's super easy:
 
 ```bash
-git clone git@github.com:dmitrykuzmenkov/yoda.git
+git clone git@github.com:DeLaGuardo/yoda.git
 cd yoda && make check && sudo make install
 ```
 
-Remember that you need bash version 4 or higher installed at least and GNU implementation of the sed.
+Remember, that you need bash version 4 or higher installed at least and GNU implementation of the sed.
 
 ## Knowledge requirements
 1. [Docker](https://docs.docker.com) and its main concept
@@ -34,17 +34,17 @@ Go into this folder and run this command to initialize environment.
 yoda init
 ```
 
-Now you will get **docker** folder created in your project.  
-Next step is prepare Dockerfile that located in docker/images folder.  
-You can setup docker build options in file docker/Buildfile.
+Now you will get **docker** folder created in your project.
+Next step is to prepare the Dockerfile that is located in the docker/images folder.  
+You can setup the `docker build` options in file docker/Buildfile.
 
-Now you can add container to your project.
+Now you can add a container to your project.
 
 ```bash
 yoda add container-name
 ```
 
-Change template for docker-compose.yml file in docker/containers/container-name/container.yml.
+Change a template for the docker-compose.yml file in docker/containers/container-name/container.yml.
 
 We are done. Build it and start with just one command now:
 
