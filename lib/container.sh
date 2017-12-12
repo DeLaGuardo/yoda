@@ -4,7 +4,7 @@ set -e
 get_containers() {
   containers=()
   for service in "$@"; do
-    containers+=($($YODA_CMD compose | grep -oE "^  $service.[0-9]+:$" | sed -E 's/^\s+(.*):/\1/'))
+    containers+=($($YODA_CMD compose | grep -oE "^  $service.[0-9]+:$" | sed -E 's/^[[:space:]]+(.*):/\1/'))
   done
 
   echo ${containers[*]}
