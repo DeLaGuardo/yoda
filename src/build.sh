@@ -58,7 +58,7 @@ for line in "${lines[@]}"; do
 
   if [[ $build_args =~ ^(.*)context:(.*)$ ]]; then
     build_args=$(eval echo "${BASH_REMATCH[1]}")
-    context="${BASH_REMATCH[2]}"
+    context=$(eval echo "${BASH_REMATCH[2]}")
   else
     build_args=$(eval echo $build_args)
     context="."
