@@ -53,6 +53,9 @@ fi
 # shellcheck source=docker/env.sh
 test -e $DOCKER_ROOT/env.sh && source $_
 
+# shellcheck source=docker/env.local.sh
+test -e $DOCKER_ROOT/env.local.sh && source $_
+
 # shellcheck source=docker/env.dev.sh
 test -e $DOCKER_ROOT/env.$ENV.sh && source $_
 
