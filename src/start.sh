@@ -44,7 +44,7 @@ service_stop() {
 }
 
 service_up() {
-  docker-compose -f $MAIN_COMPOSE_FILE -f $COMPOSE_FILE up ${compose_args[*]} -t $STOP_WAIT_TIMEOUT -d $1
+  docker-compose -f $MAIN_COMPOSE_FILE -f $COMPOSE_FILE up ${compose_args[*]} -d $1
 }
 
 get_config() {
