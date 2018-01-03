@@ -78,6 +78,15 @@ adapt_link() {
   done
 }
 
+adapt_depends_on() {
+  dependant=$(echo "$1" | sed -E 's/^[ -]+(.*)$/\1/' | tr -d $'\n')
+  for n in $(seq 0 ${SCALE_MAP[$dependant]}); do
+    echo -n '  - '
+    get_container_name "$dependant" "$n"
+    echo
+  done
+}
+
 context=
 get_context() {
   if [[ "$line" =~ ^[a-z_]+: ]]; then
@@ -123,6 +132,14 @@ for p in ${!SCALE_MAP[*]}; do
         if [[ "$context" == "links" ]]; then
           if [[ "$line" =~ ^\ *- ]]; then
             adapt_link "$line"
+            continue
+          fi
+        fi
+
+        # Convert depends_on container name to fully qualified names
+        if [[ "$context" == "depends_on" ]]; then
+          if [[ "$line" =~ ^\ *- ]]; then
+            adapt_depends_on "$line"
             continue
           fi
         fi
