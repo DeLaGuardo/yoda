@@ -63,4 +63,4 @@ if [[ -n "$rev" ]]; then
   echo "Revision: $rev"
 fi
 
-$YODA_CMD deploy "$@" --rev=$rev
+$YODA_BIN deploy "$@" --rev=$rev

@@ -66,13 +66,13 @@ validate_services() {
   echo -n "$services"
 }
 
-$YODA_CMD compose > /dev/null
+$YODA_BIN compose > /dev/null
 containers=$(get_containers "$@")
 
 # Build images on start only when no registry setted
 if [[ -z "$REGISTRY_URL" || -n "$rebuild" ]]; then
   images=$(grep image: $MAIN_COMPOSE_FILE $COMPOSE_FILE | sed -E 's|.*[ ]*image:(.*/)?([^:]*)(:.*)?|\2|' | tr -d ' ' | sort | uniq)
-  $YODA_CMD build ${build_args[*]} $images
+  $YODA_BIN build ${build_args[*]} $images
 else # Pull images otherwise
   docker-compose -f $MAIN_COMPOSE_FILE -f $COMPOSE_FILE pull
 fi

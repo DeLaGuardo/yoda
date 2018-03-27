@@ -86,7 +86,7 @@ if [[ ! -n "$@" ]]; then
   for name in "${image_names[@]}"; do
     original_args+=" $name"
   done
-  $YODA_CMD build $original_args
+  $YODA_BIN build $original_args
 else
   if [[ ! $force ]]; then
     trap unlock EXIT
@@ -116,7 +116,7 @@ else
                 args+='--push'
               fi
 
-              $YODA_CMD build ${args[*]} $dep_name
+              $YODA_BIN build ${args[*]} $dep_name
             fi
 
             new_line=$(echo $line | sed -e "s@$dep_name@${image_ids[$dep_name]}@")
