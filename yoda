@@ -150,7 +150,7 @@ case "$cmd" in
 
   exec)
     check_yodarc
-    docker-compose -f $MAIN_COMPOSE_FILE -f $COMPOSE_FILE exec $@
+    bash "$YODA_PATH/src/exec.sh" "$@"
     ;;
 
   restart)
@@ -193,6 +193,7 @@ case "$cmd" in
     ;;
 
   logs)
+    check_yodarc
     $YODA_CMD log "$@"
     ;;
 
