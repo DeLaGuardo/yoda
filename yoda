@@ -41,6 +41,38 @@ if [[ -n "$yodarc_file" ]]; then
   source $yodarc_file
 fi
 
+ENVS=()
+for p in "$@"; do
+  case $p in
+    --env=*)
+      ENVS+=( "${p#*=}" )
+    ;;
+  esac
+done
+
+ENV_ARGS=()
+for e in $ENVS; do
+  ENV_ARGS+=( "--env=$e" )
+done
+
+if [ ${#ENVS[@]} == 0 ]; then
+  ENVS+=("dev")
+fi
+
+export ENV="${ENV:-${ENVS[@]}}"
+
+declare -A COMPOSE_FILES
+COMPOSE_FILES["base"]="$DOCKER_ROOT/docker-compose.yml"
+COMPOSE_FILES_ARGS="-f ${COMPOSE_FILES['base']}"
+for env in "${ENVS[@]}"; do
+  COMPOSE_FILES[$env]="$DOCKER_ROOT/docker-compose.$env.yml"
+  COMPOSE_FILES_ARGS+=" -f ${COMPOSE_FILES[$env]}"
+done
+export COMPOSE_FILES
+export COMPOSE_FILES_LIST="${COMPOSE_FILES[@]}"
+export COMPOSE_FILES_BASE="${COMPOSE_FILES['base']}"
+export COMPOSE_FILES_ARGS="${COMPOSE_FILES_ARGS[@]}"
+
 if [[ "$YODA_SOURCE_VERSION" != "$YODA_VERSION" && $cmd != upgrade ]]; then
   (
     set +e
@@ -66,13 +98,8 @@ test -e $DOCKER_ROOT/env.sh && source $_
 test -e $DOCKER_ROOT/env.local.sh && source $_
 
 # shellcheck source=docker/env.dev.sh
-test -e $DOCKER_ROOT/env.$ENV.sh && source $_
-
-for p in "$@"; do
-  case $p in
-    *)
-      ;;
-  esac
+for env in $ENVS; do
+  test -e $DOCKER_ROOT/env.$env.sh && source $_
 done
 
 # Use custom start layout if there is start file
@@ -98,8 +125,8 @@ custom_run() {
 }
 
 allow_dev_only() {
-  if [[ $ENV != 'dev' ]]; then
-    >&2 echo "Your environment: $ENV. This command is allowed only in 'dev' environment."
+  if [[ " ${ENVS[@]} " =~ " dev " ]]; then
+    >&2 echo "Your environments: ${ENVS[@]}. This command is allowed only in 'dev' environment."
     return 1
   fi
 }
@@ -109,6 +136,10 @@ check_yodarc() {
     >&2 echo "Yoda is not inited. Run '$YODA_CMD init' first. More info: '$YODA_CMD help'."
     return 1
   fi
+}
+
+refresh_composed_files() {
+  $YODA_BIN compose ${ENV_ARGS[@]} > /dev/null
 }
 
 case "$cmd" in
@@ -139,6 +170,7 @@ case "$cmd" in
 
   kompose)
     check_yodarc
+    refresh_composed_files
     bash "$YODA_PATH/src/kompose.sh" "$@"
     ;;
 
@@ -147,58 +179,72 @@ case "$cmd" in
     arg_composer="$*"
     custom_run compose
     # Get containers to build
-    containers=$(grep ^$ENV: $DOCKER_ROOT/Envfile | cut -d ':' -f2)
-    COMPOSE_SCRIPT=$arg_composer bash "$YODA_PATH/src/compose.sh" $containers > $MAIN_COMPOSE_FILE
-    COMPOSE_SCRIPT=$arg_composer bash "$YODA_PATH/src/compose.sh" --second-run $containers > $COMPOSE_FILE
-    docker-compose -f $MAIN_COMPOSE_FILE -f $COMPOSE_FILE config
+    containers=$(grep ^$ENVS: $DOCKER_ROOT/Envfile | cut -d ':' -f2)
+    for i in "${!COMPOSE_FILES[@]}"; do
+      if [[ $i == "base" ]]; then
+        ENV=$i COMPOSE_SCRIPT=$arg_composer bash "$YODA_PATH/src/compose.sh" $containers > ${COMPOSE_FILES[$i]}
+      else
+        ENV=$i COMPOSE_SCRIPT=$arg_composer bash "$YODA_PATH/src/compose.sh" --second-run $containers > ${COMPOSE_FILES[$i]}
+      fi
+    done
+    docker-compose $COMPOSE_FILES_ARGS config
     ;;
 
   exec)
     check_yodarc
+    refresh_composed_files
     bash "$YODA_PATH/src/exec.sh" "$@"
     ;;
 
   restart)
     check_yodarc
+    refresh_composed_files
     bash "$YODA_PATH/src/restart.sh" "$@"
     ;;
 
   build)
     check_yodarc
     custom_run build "$@"
+    refresh_composed_files
     bash "$YODA_PATH/src/build.sh" "$@"
     ;;
 
   start)
     check_yodarc
     custom_run start "$@"
+    refresh_composed_files
     bash "$YODA_PATH/src/start.sh" "$@"
     ;;
 
   stop)
     check_yodarc
     custom_run stop "$@"
+    refresh_composed_files
     bash "$YODA_PATH/src/stop.sh" "$@"
     ;;
 
   destroy)
     check_yodarc
     custom_run destroy
+    refresh_composed_files
     bash "$YODA_PATH/src/destroy.sh"
     ;;
 
   status)
     check_yodarc
+    refresh_composed_files
     bash "$YODA_PATH/src/status.sh"
     ;;
 
   log)
     check_yodarc
+    refresh_composed_files
     bash "$YODA_PATH/src/log.sh" "$@"
     ;;
 
   logs)
     check_yodarc
+    refresh_composed_files
     $YODA_CMD log "$@"
     ;;
 
