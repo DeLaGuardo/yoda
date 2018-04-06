@@ -137,6 +137,11 @@ case "$cmd" in
     done
     ;;
 
+  kompose)
+    check_yodarc
+    bash "$YODA_PATH/src/kompose.sh" "$@"
+    ;;
+
   compose)
     check_yodarc
     arg_composer="$*"

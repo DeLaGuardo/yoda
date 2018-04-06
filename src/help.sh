@@ -11,6 +11,7 @@ Commands available:
   ${c_bold}delete${c_normal}    Delete existing container from project
   ${c_bold}build${c_normal}     Build images for current project
   ${c_bold}compose${c_normal}   Display generated compose file for current environment
+  ${c_bold}kompose${c_normal}   Display generated kubernetes resources for current environment
   ${c_bold}start${c_normal}     Start all services for current project
   ${c_bold}stop${c_normal}      Stop all services for current project
   ${c_bold}log${c_normal}       View output from containers
@@ -48,6 +49,9 @@ Usage:
   ${c_bold}$YODA_CMD compose [COMPOSE_SCRIPT]${c_normal}
     Display generated docker-compose file in stdout.
     COMPOSE_SCRIPT    executable script who will process each container template, replace something and return as plain text. Container templates goes to stdin and 2 addition arguments are passed: --name and --sequence so name of container and number in scale map
+
+  ${c_bold}$YODA_CMD kompose${c_normal}
+    Display generated kubernetes resources in stdout
 
   ${c_bold}$YODA_CMD start [options] [CONTAINER...]${c_normal}
     Start all containers or only passed with arguments
