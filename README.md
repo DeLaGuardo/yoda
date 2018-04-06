@@ -1,7 +1,7 @@
 # Yoda
-Simple tool to dockerize and manage deployment of your project  
+Simple tool to dockerize and manage deployment of your project
 
-![Alt text](/img/yoda.jpg?raw=true "Help you deploy I will")  
+![Alt text](/img/yoda.jpg?raw=true "Help you deploy I will")
 
 ## What is it?
 Yoda helps you to dockerize existing application and automate the deployment process.
@@ -27,7 +27,7 @@ Remember, that you need bash version 4 or higher installed at least and GNU impl
 3. You know [Docker Compose](https://docs.docker.com/compose/overview/) and and [its file syntax](https://docs.docker.com/compose/compose-file/).
 
 ## Usage example
-OK. You have git repository with your project.  
+OK. You have git repository with your project.
 Go into this folder and run this command to initialize environment.
 
 ```bash
@@ -35,7 +35,7 @@ yoda init
 ```
 
 Now you will get **docker** folder created in your project.
-Next step is to prepare the Dockerfile that is located in the docker/images folder.  
+Next step is to prepare the Dockerfile that is located in the docker/images folder.
 You can setup the `docker build` options in file docker/Buildfile.
 
 Now you can add a container to your project.
@@ -76,9 +76,9 @@ When you do yoda init in your project it creates by default yoda folder. This fo
 | Envfile | It describes all environments and link servers for deploy with its environments you have. No limitation. You can create own environments and describe what containers must be built there |
 
 ### Path: containers
-When you adding new container folder is created here with same name. For example if you add container with name **container**. Same folder will appear here.  
+When you adding new container folder is created here with same name. For example if you add container with name **container**. Same folder will appear here.
 This folder will contain some files.
- 
+
 | File | Description |
 |---|---|
 | container.yml | Its docker-compose section without section name that describes how to build container. This file used to generate whole docker-compose.yml file for starting services |
@@ -89,9 +89,9 @@ This folder will contain some files.
 This file contains valid docker-compose section for current service. container_name is immutable and declared by Yoda internaly. You can specify image key here with shortcut to image from Buildfile. For example if your Buildfile describe image with key "base" you can put here just **image: base** and Yoda automatic will replace base to image from build params specified in Buildfile.
 
 ### Path: env.sh
-Here you can declare BASH environment variables and use it everywhere.  
+Here you can declare BASH environment variables and use it everywhere.
 
-For example you can write here IMAGE_NAME to set image name with revision and other staff and use it in Buildfile and container.yml.  
+For example you can write here IMAGE_NAME to set image name with revision and other staff and use it in Buildfile and container.yml.
 
 If you need custom env.sh file for environment you can just create it with name as env.dev.sh that will extend default env.sh file with new variables defined there.
 
@@ -107,18 +107,18 @@ Each line contains image name and build args that will be passed in **docker bui
 
 ### Path: Envfile
 Its simple file YAML like with environment and server description:
-  
+
 ```yaml
 user@server: production
 production: container1 container2=2
 dev: container1
 ```
 
-Example file above declare server **user@server** that will be deployed as **production**. And production will contain one container1 and two container2 instances.  
+Example file above declare server **user@server** that will be deployed as **production**. And production will contain one container1 and two container2 instances.
 ANd in dev environment only one container with name container1 will be started.
 
 ## Path: Startfile
-This file allow you to manage flow of start your complex service.  
+This file allow you to manage flow of start your complex service.
 
 ```yaml
 dev:
@@ -131,21 +131,21 @@ dev:
 - **wait** - After run up command with container sometimes you need to wait for exit code of it. This section declares which containers we should wait for
 
 
-In this example you [yoda start](#yoda-start-options-container) command first will stop container2 if its running.  
-After that it will start deploy, then container2 and then container1 services will be started as chunks by 2.  
+In this example you [yoda start](#yoda-start-options-container) command first will stop container2 if its running.
+After that it will start deploy, then container2 and then container1 services will be started as chunks by 2.
 Also we wait for exit code for deploy container.
 
 ## Path: docker/.yodarc
-This is locked environment file for yoda inited in current project with yoda version and other useful common files. Plese dont edit this file because it rewrites on yoda upgrade.  
+This is locked environment file for yoda inited in current project with yoda version and other useful common files. Plese dont edit this file because it rewrites on yoda upgrade.
 
-If you want you can redefine all variables in [env.sh](#path-envsh) file.  
+If you want you can redefine all variables in [env.sh](#path-envsh) file.
 
 ## Yoda command line tool usage
 ```bash
 yoda command arguments
 ```
 
-Commands available:  
+Commands available:
 
 | Command | Description |
 |---|---|
@@ -215,7 +215,7 @@ Options are:
 | --recreate | Force recreate containers |
 | --force | Should start containers excluding Startfile flow description |
 
-You also can manager flow of start and restart of you containers using [Startfile](#path-startfile)  
+You also can manager flow of start and restart of you containers using [Startfile](#path-startfile)
 
 ### yoda stop [CONTAINER...]
 Stop all containers or only passed with arguments
@@ -224,7 +224,7 @@ Stop all containers or only passed with arguments
 Display current status of services
 
 ### yoda deploy [options]
-Deploy single-node or whole cluster  
+Deploy single-node or whole cluster
 It exit with code 0 for success and 1 for failure (if something went wrong also on one node of all).
 Options are:
 

@@ -46,16 +46,21 @@ Usage:
       --no-cache    Dont use Dockerfile cache when building images. Default: not set.
       --push        Should we push builded images to repository if we have REPOSITORY_URL defined in env.sh file. Default: not set
 
-  ${c_bold}$YODA_CMD compose [COMPOSE_SCRIPT]${c_normal}
+  ${c_bold}$YODA_CMD compose [COMPOSE_SCRIPT] [options]${c_normal}
     Display generated docker-compose file in stdout.
     COMPOSE_SCRIPT    executable script who will process each container template, replace something and return as plain text. Container templates goes to stdin and 2 addition arguments are passed: --name and --sequence so name of container and number in scale map
+    Options are:
+      --env="env"   Repeatable. Chain of environment references that should be used for that command. Applied left to right (the rightmost value has great power)
 
-  ${c_bold}$YODA_CMD kompose${c_normal}
+  ${c_bold}$YODA_CMD kompose [options]${c_normal}
     Display generated kubernetes resources in stdout
+    Options are:
+      --env="env"   Repeatable. Chain of environment references that should be used for that command. Applied left to right (the rightmost value has great power)
 
   ${c_bold}$YODA_CMD start [options] [CONTAINER...]${c_normal}
     Start all containers or only passed with arguments
     Options are:
+      --env="env"   Repeatable. Chain of environment references that should be used for that command. Applied left to right (the rightmost value has great power)
       --rebuild     Rebuild all images also if they exist with that revision. Default: not set.
       --no-cache    Dont use Dockerfile cache on building images stage. It passes internally to build command. Default: not set.
       --recreate    Force recreate containers. Default: not set.
@@ -63,6 +68,8 @@ Usage:
 
   ${c_bold}$YODA_CMD stop [CONTAINER...]${c_normal}
     Stop all containers or only passed with arguments
+    Options are:
+      --env="env"   Repeatable. Chain of environment references that should be used for that command. Applied left to right (the rightmost value has great power)
 
   ${c_bold}$YODA_CMD log [options] [SERVICE...]${c_normal}
     View output from containers.
