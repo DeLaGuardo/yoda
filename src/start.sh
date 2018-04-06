@@ -74,7 +74,6 @@ validate_services() {
   echo -n "$services"
 }
 
-$YODA_BIN compose > /dev/null
 containers=$(get_containers "$@")
 
 # Build images on start only when no registry setted

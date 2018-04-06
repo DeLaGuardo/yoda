@@ -50,11 +50,16 @@ for p in "$@"; do
   esac
 done
 
+ENV_ARGS=()
+for e in $ENVS; do
+  ENV_ARGS+=( "--env=$e" )
+done
+
 if [ ${#ENVS[@]} == 0 ]; then
   ENVS+=("dev")
 fi
 
-export ENV="${ENVS[@]}"
+export ENV="${ENV:-${ENVS[@]}}"
 
 declare -A COMPOSE_FILES
 COMPOSE_FILES["base"]="$DOCKER_ROOT/docker-compose.yml"
@@ -133,6 +138,10 @@ check_yodarc() {
   fi
 }
 
+refresh_composed_files() {
+  $YODA_BIN compose ${ENV_ARGS[@]} > /dev/null
+}
+
 case "$cmd" in
   init)
     bash "$YODA_PATH/src/init.sh" "$@"
@@ -161,7 +170,8 @@ case "$cmd" in
 
   kompose)
     check_yodarc
-    COMPOSE_FILES_ARGS=$COMPOSE_FILES_ARGS bash "$YODA_PATH/src/kompose.sh" "$@"
+    refresh_composed_files
+    bash "$YODA_PATH/src/kompose.sh" "$@"
     ;;
 
   compose)
@@ -182,51 +192,59 @@ case "$cmd" in
 
   exec)
     check_yodarc
-    # COMPOSE_FILES_ARGS=$COMPOSE_FILES_ARGS
+    refresh_composed_files
     bash "$YODA_PATH/src/exec.sh" "$@"
     ;;
 
   restart)
     check_yodarc
-    COMPOSE_FILES_ARGS=$COMPOSE_FILES_ARGS bash "$YODA_PATH/src/restart.sh" "$@"
+    refresh_composed_files
+    bash "$YODA_PATH/src/restart.sh" "$@"
     ;;
 
   build)
     check_yodarc
     custom_run build "$@"
+    refresh_composed_files
     bash "$YODA_PATH/src/build.sh" "$@"
     ;;
 
   start)
     check_yodarc
     custom_run start "$@"
-    COMPOSE_FILES_ARGS=$COMPOSE_FILES_ARGS bash "$YODA_PATH/src/start.sh" "$@"
+    refresh_composed_files
+    bash "$YODA_PATH/src/start.sh" "$@"
     ;;
 
   stop)
     check_yodarc
     custom_run stop "$@"
+    refresh_composed_files
     bash "$YODA_PATH/src/stop.sh" "$@"
     ;;
 
   destroy)
     check_yodarc
     custom_run destroy
+    refresh_composed_files
     bash "$YODA_PATH/src/destroy.sh"
     ;;
 
   status)
     check_yodarc
+    refresh_composed_files
     bash "$YODA_PATH/src/status.sh"
     ;;
 
   log)
     check_yodarc
+    refresh_composed_files
     bash "$YODA_PATH/src/log.sh" "$@"
     ;;
 
   logs)
     check_yodarc
+    refresh_composed_files
     $YODA_CMD log "$@"
     ;;
 
