@@ -65,7 +65,7 @@ for env in "${ENVS[@]}"; do
 done
 export COMPOSE_FILES
 export COMPOSE_FILES_LIST="${COMPOSE_FILES[@]}"
-export COMPOSE_FILE_BASE="${COMPOSE_FILES['base']}"
+export COMPOSE_FILES_BASE="${COMPOSE_FILES['base']}"
 export COMPOSE_FILES_ARGS="${COMPOSE_FILES_ARGS[@]}"
 
 if [[ "$YODA_SOURCE_VERSION" != "$YODA_VERSION" && $cmd != upgrade ]]; then
