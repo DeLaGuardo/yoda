@@ -54,10 +54,10 @@ echo 'version: "2.1"'
 echo 'services:'
 
 # name, sequence
-# Remove .0 suffix if we have only one container of such type
+# Remove .0 suffix
 get_container_name() {
   container_name="$1.$2"
-  if [[ $CONTAINER_SCALE_INDEX == 0 && ${SCALE_MAP[$1]:-0} == 0 ]]; then
+  if [[ $2 == 0 ]]; then
     container_name=$1
   fi
 
