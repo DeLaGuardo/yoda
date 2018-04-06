@@ -5,4 +5,4 @@ source $YODA_PATH/lib/container.sh
 containers=$(get_containers "$@")
 
 $YODA_BIN compose > /dev/null
-docker-compose -f $MAIN_COMPOSE_FILE -f $COMPOSE_FILE logs -f --tail="50" ${containers[*]}
+docker-compose $COMPOSE_FILES_ARGS logs -f --tail="50" ${containers[*]}

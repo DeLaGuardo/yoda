@@ -3,4 +3,4 @@ set -e
 
 $YODA_BIN compose > /dev/null
 command -v kompose >/dev/null 2>&1 || { echo >&2 "kompose is not installed. Please check this link for installation instructions - http://kompose.io/"; exit 1; }
-kompose convert -f $MAIN_COMPOSE_FILE -f $COMPOSE_FILE --stdout
+kompose convert $COMPOSE_FILES_ARGS --stdout
