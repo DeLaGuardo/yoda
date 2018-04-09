@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+
 YODA_SOURCE_VERSION='1.2'
 # YODA_VERSION redefined when you are in project dir
 YODA_VERSION=$YODA_SOURCE_VERSION
@@ -177,14 +178,13 @@ case "$cmd" in
   compose)
     check_yodarc
     arg_composer="$*"
-    custom_run compose
     # Get containers to build
     containers=$(grep ^$ENVS: $DOCKER_ROOT/Envfile | cut -d ':' -f2)
     for i in "${!COMPOSE_FILES[@]}"; do
       if [[ $i == "base" ]]; then
-        ENV= COMPOSE_SCRIPT=$arg_composer bash "$YODA_PATH/src/compose.sh" $containers > ${COMPOSE_FILES[$i]}
+        ENV="" bash "$YODA_PATH/src/compose.sh" $containers > ${COMPOSE_FILES[$i]}
       else
-        ENV=".$i" COMPOSE_SCRIPT=$arg_composer bash "$YODA_PATH/src/compose.sh" --second-run $containers > ${COMPOSE_FILES[$i]}
+        ENV=".$i" bash "$YODA_PATH/src/compose.sh" --second-run $containers > ${COMPOSE_FILES[$i]}
       fi
     done
     docker-compose $COMPOSE_FILES_ARGS config
@@ -204,7 +204,6 @@ case "$cmd" in
 
   build)
     check_yodarc
-    custom_run build "$@"
     refresh_composed_files
     bash "$YODA_PATH/src/build.sh" "$@"
     ;;
@@ -225,7 +224,6 @@ case "$cmd" in
 
   destroy)
     check_yodarc
-    custom_run destroy
     refresh_composed_files
     bash "$YODA_PATH/src/destroy.sh"
     ;;
@@ -255,7 +253,6 @@ case "$cmd" in
       exit 1
     fi
 
-    custom_run deploy "$@"
     bash "$YODA_PATH/src/deploy.sh" "$@"
     ;;
 
