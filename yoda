@@ -182,9 +182,9 @@ case "$cmd" in
     containers=$(grep ^$ENVS: $DOCKER_ROOT/Envfile | cut -d ':' -f2)
     for i in "${!COMPOSE_FILES[@]}"; do
       if [[ $i == "base" ]]; then
-        ENV=$i COMPOSE_SCRIPT=$arg_composer bash "$YODA_PATH/src/compose.sh" $containers > ${COMPOSE_FILES[$i]}
+        ENV= COMPOSE_SCRIPT=$arg_composer bash "$YODA_PATH/src/compose.sh" $containers > ${COMPOSE_FILES[$i]}
       else
-        ENV=$i COMPOSE_SCRIPT=$arg_composer bash "$YODA_PATH/src/compose.sh" --second-run $containers > ${COMPOSE_FILES[$i]}
+        ENV=".$i" COMPOSE_SCRIPT=$arg_composer bash "$YODA_PATH/src/compose.sh" --second-run $containers > ${COMPOSE_FILES[$i]}
       fi
     done
     docker-compose $COMPOSE_FILES_ARGS config
