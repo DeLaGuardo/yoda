@@ -99,7 +99,7 @@ get_context() {
 for p in ${!SCALE_MAP[*]}; do
   for i in $(seq 0 ${SCALE_MAP[$p]:-0}); do
     container_name=$(get_container_name "$p" "$i")
-    env_container_file="$DOCKER_ROOT/containers/$p/container.$ENV.yml"
+    env_container_file="$DOCKER_ROOT/containers/$p/container$ENV.yml"
     container_file="$DOCKER_ROOT/containers/$p/container.yml"
 
     echo "  $container_name:"
@@ -150,3 +150,88 @@ for p in ${!SCALE_MAP[*]}; do
     } | sed "s/^/    /g" | compose_container $p $i
   done
 done
+
+all_used_containers=()
+for p in ${!SCALE_MAP[*]}; do
+  env_container_file="$DOCKER_ROOT/containers/$p/container$ENV.yml"
+  container_file="$DOCKER_ROOT/containers/$p/container.yml"
+  # if [[ $second_run ]]; then
+  #   container_file="$env_container_file"
+  # fi
+  if [[ -f "$container_file" ]]; then
+    all_used_containers+=("$container_file")
+  fi
+  if [[ -f "$env_container_file" ]]; then
+    all_used_containers+=("$env_container_file")
+  fi
+done
+
+networks=()
+
+if [[ "${#all_used_containers[@]}" != "0" && `grep 'networks:' "${all_used_containers[@]}"` ]]; then
+  for p in ${!SCALE_MAP[*]}; do
+    for i in $(seq 0 ${SCALE_MAP[$p]:-0}); do
+      container_name=$(get_container_name "$p" "$i")
+      env_container_file="$DOCKER_ROOT/containers/$p/container$ENV.yml"
+      container_file="$DOCKER_ROOT/containers/$p/container.yml"
+
+      if [[ -f "$container_file" ]]; then
+        mapfile -t lines < "$container_file"
+        for line in "${lines[@]}"; do
+          context=$(get_context "$line")
+
+          # Handle network context
+          if [[ "$context" == "networks" ]]; then
+            if [[ "$line" =~ ^[\ ]{2}- || "$line" =~ ^[\ ]{2}[a-zA-Z]+ ]]; then
+              network_name=$(echo "$line" | sed -E 's/^[ -]+([^:]*)([:])?/\1/' |tr -d $'\n')
+              networks+=("$network_name")
+            fi
+          else
+            continue
+          fi
+        done
+      fi
+
+      if [[ -f "$env_container_file" ]]; then
+        mapfile -t lines < "$env_container_file"
+        for line in "${lines[@]}"; do
+          context=$(get_context "$line")
+
+          # Handle network context
+          if [[ "$context" == "networks" ]]; then
+            if [[ "$line" =~ ^[\ ]{2}- || "$line" =~ ^[\ ]{2}[a-zA-Z]+ ]]; then
+              network_name=$(echo "$line" | sed -E 's/^[ -]+([^:]*)([:])?/\1/' |tr -d $'\n')
+              networks+=("$network_name")
+            fi
+          else
+            continue
+          fi
+        done
+      fi
+
+    done
+  done
+
+  if [[ "${#networks[@]}" != "0" ]]; then
+    echo "networks:"
+    for network_name in `tr ' ' '\n' <<< "${networks[@]}" | sort -u | tr '\n' ' '`; do
+      echo "  $network_name:"
+
+      env_network_file="$DOCKER_ROOT/networks/$network_name/network$ENV.yml"
+      network_file="$DOCKER_ROOT/networks/$network_name/network.yml"
+
+      if [[ -f "$env_network_file" && $second_run ]]; then
+        network_file="$env_network_file"
+      fi
+
+      if [[ -f "$network_file" ]]; then
+        mapfile -t lines < "$network_file"
+        {
+          for line in "${lines[@]}"; do
+            echo "$line"
+          done
+        } | sed "s/^/    /g" | cat -
+      fi
+    done
+  fi
+fi
