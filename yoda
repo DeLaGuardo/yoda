@@ -172,7 +172,7 @@ case "$cmd" in
 
   kompose)
     check_yodarc
-    refresh_composed_files
+    KOMPOSE=true refresh_composed_files
     bash "$YODA_PATH/src/kompose.sh" "$@"
     ;;
 

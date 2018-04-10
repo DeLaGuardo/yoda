@@ -109,7 +109,11 @@ for p in ${!SCALE_MAP[*]}; do
     fi
 
     if [[ ! $second_run ]]; then
-      echo "    container_name: ${COMPOSE_PROJECT_NAME}.$container_name"
+      if [[ $KOMPOSE ]]; then
+        echo "    container_name: $container_name"
+      else
+        echo "    container_name: ${COMPOSE_PROJECT_NAME}.$container_name"
+      fi
       echo "    hostname: ${HOSTNAME}.${COMPOSE_PROJECT_NAME}.$container_name"
     fi
 
