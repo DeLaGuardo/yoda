@@ -47,6 +47,7 @@ for p in "$@"; do
   case $p in
     --env=*)
       ENVS+=( "${p#*=}" )
+      shift
     ;;
   esac
 done
