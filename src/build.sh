@@ -26,6 +26,10 @@ for p in "$@"; do
       push=1
       shift
       ;;
+    --latest)
+      latest=1
+      shift
+      ;;
     --force)
       force=1
       shift
@@ -37,10 +41,6 @@ if [[ -f $lock_file && ! $force ]]; then
   >&2 echo "Build is already in progress."
   >&2 echo "If something went wrong you should just remove lock file: $lock_file"
   exit 1
-fi
-
-if [[ -n "$REGISTRY_URL" ]]; then
-  echo "Using docker registry: $REGISTRY_URL"
 fi
 
 declare -A image_names
@@ -99,23 +99,22 @@ else
     else
       newline=$'\n'
       build_instructions=""
+      args=('--force')
+      if [[ -n "$rebuild" ]]; then
+        args+=('--rebuild')
+      fi
+      if [[ -n "$no_cache" ]]; then
+        args+=('--no-cache')
+      fi
+      if [[ -n "$push" ]]; then
+        args+=('--push')
+      fi
       mapfile -t deps < $DOCKER_ROOT/images/Dockerfile-$image_for_build
       for line in "${deps[@]}"; do
         if [[ $line =~ ^FROM.* ]]; then
           dep_name=$(echo $line | grep -Eo 'FROM [^ ]+' | cut -d' ' -f2)
           if [[ "${image_names[$dep_name]}" == $dep_name ]]; then
             if ! $(builded $dep_name) ; then
-              args=('--force')
-              if [[ -n "$rebuild" ]]; then
-                args+=('--rebuild')
-              fi
-              if [[ -n "$no_cache" ]]; then
-                args+=('--no-cache')
-              fi
-              if [[ -n "$push" ]]; then
-                args+='--push'
-              fi
-
               $YODA_BIN build ${args[*]} $dep_name
             fi
 
@@ -137,6 +136,10 @@ else
         echo "$build_instructions" | docker build --network host ${image_build_args[$image_for_build]} -f - ${image_build_context[$image_for_build]}
       else
         echo 'built already.'
+      fi
+
+      if [[ -n "$latest" ]]; then
+        REVISION=latest $YODA_BIN build ${args[*]} $image_for_build
       fi
 
     fi
