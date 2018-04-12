@@ -26,10 +26,6 @@ for p in "$@"; do
       push=1
       shift
       ;;
-    --latest)
-      latest=1
-      shift
-      ;;
     --force)
       force=1
       shift
@@ -142,10 +138,6 @@ else
         fi
       else
         echo 'built already.'
-      fi
-
-      if [[ -n "$latest" ]]; then
-        REVISION=latest $YODA_BIN build ${args[*]} $image_for_build
       fi
 
     fi
