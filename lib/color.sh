@@ -4,7 +4,7 @@
 # For example: echo "${c_green}${c_bold}hello${c_normal}"
 set -e
 
-if test -t 1; then
+if [ -z ${TERM+x} ]; then
   color_cnt=$(tput colors)
 
   if [[ -n "$color_cnt" && $color_cnt -ge 8 ]]; then
