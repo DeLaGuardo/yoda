@@ -140,6 +140,7 @@ check_yodarc() {
 }
 
 refresh_composed_files() {
+  rm $DOCKER_ROOT/docker-compose.*
   $YODA_BIN compose ${ENV_ARGS[@]} > /dev/null
 }
 
