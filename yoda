@@ -140,7 +140,6 @@ check_yodarc() {
 }
 
 refresh_composed_files() {
-  rm $DOCKER_ROOT/docker-compose.*
   $YODA_BIN compose ${ENV_ARGS[@]} > /dev/null
 }
 
@@ -205,7 +204,6 @@ case "$cmd" in
 
   build)
     check_yodarc
-    refresh_composed_files
     bash "$YODA_PATH/src/build.sh" "$@"
     ;;
 

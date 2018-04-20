@@ -30,6 +30,9 @@ for p in "$@"; do
       force=1
       shift
       ;;
+    --env=*)
+      shift
+      ;;
   esac
 done
 
